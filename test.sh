@@ -109,6 +109,12 @@ test_rust_project() {
         return 1
     fi
     
+    # 古いCargo.lockファイルを削除（バージョン互換性問題を回避）
+    if [ -f "Cargo.lock" ]; then
+        rm -f "Cargo.lock"
+        echo "  古いCargo.lockファイルを削除しました" >> "$DETAILED_LOG"
+    fi
+    
     # ビルドのテスト
     if cargo clean >/dev/null 2>&1 && cargo build >> "$DETAILED_LOG" 2>&1; then
         echo -e "${GREEN}  ✓ ビルド成功${NC}"
@@ -141,6 +147,11 @@ if [ ! -d "$CONC_DIR" ]; then
     echo "CRITICAL: conc_ytakanoディレクトリが見つかりません" >> "$FAILURE_LOG"
     exit 1
 fi
+
+# 古いCargo.lockファイルを一括削除（バージョン互換性問題を回避）
+echo -e "${BLUE}古いCargo.lockファイルを削除中...${NC}"
+find "$CONC_DIR" -name "Cargo.lock" -type f -delete 2>/dev/null || true
+echo "Cargo.lockファイル削除完了" >> "$DETAILED_LOG"
 
 # 各章のディレクトリを処理
 for chap_dir in "$CONC_DIR"/chap*; do
