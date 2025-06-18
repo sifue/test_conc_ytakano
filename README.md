@@ -16,6 +16,18 @@
 - Docker Desktop がインストールされていること
 - 対象プラットフォームで `docker buildx` コマンドが使用可能であること
 
+## 重要な注意事項
+
+### プラットフォーム対応
+- **対象環境**: x86_64 (amd64) プラットフォーム専用
+- **除外項目**: `appendix_A` ディレクトリは ARM64 アセンブリのため、x86_64 環境では動作しません
+
+### 書籍コードの互換性
+このプロジェクトは書籍のサンプルコードを**一切変更せずに**動作させることを目的としています。互換性確保のため、以下の調整を行っています：
+
+- **Rust バージョン**: 1.70.0 を使用（最新版 1.87.0 ではなく）
+- **ビルドツール**: 必要な依存関係をDocker環境に事前インストール
+
 ## セットアップ
 
 ### 1. サンプルコードの取得
@@ -112,14 +124,25 @@ conc_ytakano/
 
 ### Docker環境
 
-ベースイメージ: Ubuntu 22.04 LTS
+**ベースイメージ**: Ubuntu 24.04 LTS
 
-インストール済みツール：
-- **NASM**: version 2.16.01
-- **GNU Assembler**: version 2.42 
-- **GCC**: version 13.3.0
-- **Rust**: version 1.87.0
-- **Cargo**: version 1.87.0
+**インストール済みツール**：
+- **NASM**: version 2.16.01 (アセンブリアセンブラ)
+- **GNU Assembler**: version 2.42 (GASアセンブラ)
+- **GCC**: version 13.3.0 (C/C++コンパイラ、32bit/64bit対応)
+- **Rust**: version 1.70.0 (書籍サンプルコード互換バージョン)
+- **Cargo**: version 1.70.0 (Rustパッケージマネージャ)
+- **binutils**: アーカイブツール (arコマンド含む)
+
+### バージョン選択の理由
+
+**Rust 1.70.0 を選択した理由**：
+1. **`#![feature(asm)]` 対応**: chap7/7.3 で使用される不安定機能をサポート
+2. **lint 互換性**: chap4/4.1 の `let_underscore_lock` lint 厳格化を回避
+3. **書籍執筆時期**: サンプルコードが想定する Rust バージョンとの互換性確保
+
+**追加パッケージの理由**：
+- **binutils**: chap6/ch6_mult の build.rs で `ar` コマンドが必要
 
 ### テスト仕様
 
@@ -138,10 +161,10 @@ conc_ytakano/
 
 ```bash
 # Dockerイメージをビルド
-docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.87 .
+docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
 
 # コンテナを起動してテスト実行
-docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.87 ./test.sh
+docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.70 ./test.sh
 ```
 
 ### 出力例
@@ -175,10 +198,12 @@ Testing C project: chap3/3.2
 ...
 
 === テスト結果サマリー ===
-C言語プロジェクト: 15/15 成功
-Rustプロジェクト:  28/28 成功
-アセンブリ生成:    8/8 成功
+C言語プロジェクト: 8/8 成功
+Rustプロジェクト:  37/37 成功
+アセンブリ生成:    2/2 成功
 🎉 全てのテストが成功しました！
+
+注意: appendix_A は ARM64 アセンブリのため x86_64 環境では除外されています
 ```
 
 ## トラブルシューティング
@@ -195,6 +220,11 @@ Rustプロジェクト:  28/28 成功
 3. **一部のビルドが失敗する場合**
    - `test_logs/failure.log` で詳細なエラー内容を確認
    - `test_logs/detailed.log` でビルドログを確認
+
+4. **互換性に関する問題**
+   - **Rust バージョンエラー**: Docker環境は Rust 1.70.0 を使用（最新版使用時は互換性問題が発生）
+   - **ARM64 アセンブリエラー**: `appendix_A` は x86_64 環境では動作しません（テスト対象から除外済み）
+   - **リンクエラー**: `binutils` パッケージが正しくインストールされているか確認
 
 ### ログファイルの確認
 

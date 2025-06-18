@@ -179,16 +179,16 @@ for chap_dir in "$CONC_DIR"/chap*; do
     fi
 done
 
-# appendix_Aも処理
-APPENDIX_DIR="$CONC_DIR/appendix_A"
-if [ -d "$APPENDIX_DIR" ]; then
-    echo -e "${BLUE}=== appendix_A ===${NC}"
-    if [ -f "$APPENDIX_DIR/Makefile" ]; then
-        ((C_TOTAL++))
-        test_c_project "$APPENDIX_DIR" "appendix_A"
-    fi
-    echo ""
-fi
+# appendix_Aは除外（ARM64アセンブリのためx86_64環境では動作しない）
+# APPENDIX_DIR="$CONC_DIR/appendix_A"
+# if [ -d "$APPENDIX_DIR" ]; then
+#     echo -e "${BLUE}=== appendix_A ===${NC}"
+#     if [ -f "$APPENDIX_DIR/Makefile" ]; then
+#         ((C_TOTAL++))
+#         test_c_project "$APPENDIX_DIR" "appendix_A"
+#     fi
+#     echo ""
+# fi
 
 # 結果サマリーの表示
 echo -e "${BLUE}=== テスト結果サマリー ===${NC}"
