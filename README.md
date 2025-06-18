@@ -41,13 +41,13 @@ git clone https://github.com/oreilly-japan/conc_ytakano.git
 ### 2. Dockerイメージのビルド
 
 ```bash
-docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.87 .
+docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
 ```
 
 ### 3. コンテナの起動とテスト実行
 
 ```bash
-docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.87 bash
+docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.70 bash
 ```
 
 コンテナ内で以下のコマンドを実行してテストを開始します：
