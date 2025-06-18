@@ -115,8 +115,8 @@ test_rust_project() {
         echo "  古いCargo.lockファイルを削除しました" >> "$DETAILED_LOG"
     fi
     
-    # 問題のあるプロジェクトをスキップ（成功としてカウント）
-    if [[ "$project_name" == *"ch6_mult"* ]]; then
+    # ARM64アセンブリプロジェクトをスキップ（成功としてカウント）
+    if [[ "$project_name" == *"ch6_mult"* ]] && [[ "$project_name" != *"ch6_mult-x86_64-linux"* ]]; then
         echo -e "${YELLOW}  スキップ: ARM64アセンブリはx86_64環境では動作しません${NC}"
         echo "SKIP: $project_name - ARM64アセンブリはx86_64環境では動作しません" >> "$DETAILED_LOG"
         echo "SUCCESS: $project_name - スキップ（ARM64アセンブリ）" >> "$SUCCESS_LOG"
