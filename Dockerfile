@@ -24,7 +24,8 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 RUN curl -sSf https://sh.rustup.rs | \
     sh -s -- -y --default-toolchain ${RUST_VERSION} \
            --profile minimal --no-modify-path \
- && rustup component add rustfmt clippy
+ && rustup component add rustfmt clippy \
+ && rustup toolchain install nightly
 
 # ---- 3. デフォルトシェル ----------
 CMD [ "bash" ]

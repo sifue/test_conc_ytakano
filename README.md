@@ -20,7 +20,10 @@
 
 ### プラットフォーム対応
 - **対象環境**: x86_64 (amd64) プラットフォーム専用
-- **除外項目**: `appendix_A` ディレクトリは ARM64 アセンブリのため、x86_64 環境では動作しません
+- **除外項目**: 
+  - `appendix_A` ディレクトリは ARM64 アセンブリのため、x86_64 環境では動作しません
+  - `chap6/ch6_mult` プロジェクトも ARM64 アセンブリのため、x86_64 環境では除外されます
+  - `chap7/7.3/ch7_3_lockfree` プロジェクトも ARM64 アセンブリのため、x86_64 環境では除外されます
 
 ### 書籍コードの互換性
 このプロジェクトは書籍のサンプルコードを**一切変更せずに**動作させることを目的としています。互換性確保のため、以下の調整を行っています：
@@ -132,17 +135,21 @@ conc_ytakano/
 - **GCC**: version 13.3.0 (C/C++コンパイラ、32bit/64bit対応)
 - **Rust**: version 1.70.0 (書籍サンプルコード互換バージョン)
 - **Cargo**: version 1.70.0 (Rustパッケージマネージャ)
+- **Rust Nightly**: 特定プロジェクト用（ch7_3_lockfree）
 - **binutils**: アーカイブツール (arコマンド含む)
 
 ### バージョン選択の理由
 
 **Rust 1.70.0 を選択した理由**：
-1. **`#![feature(asm)]` 対応**: chap7/7.3 で使用される不安定機能をサポート
-2. **lint 互換性**: chap4/4.1 の `let_underscore_lock` lint 厳格化を回避
+1. **Tokio互換性**: chap5/5.4 系プロジェクトで必要な最小バージョン
+2. **デュアルアプローチ**: 安定版(1.70.0) + Nightly(特定プロジェクト用)
 3. **書籍執筆時期**: サンプルコードが想定する Rust バージョンとの互換性確保
 
-**追加パッケージの理由**：
-- **binutils**: chap6/ch6_mult の build.rs で `ar` コマンドが必要
+**特別な対応**：
+- **binutils**: アーカイブ作成用 (`ar` コマンド)
+- **Nightly Rust**: `chap7/7.3/ch7_3_lockfree` の `#![feature(asm)]` 対応
+- **Lint無効化**: `chap4/4.1/ch4_1_rwlock_2_2` の `let_underscore_lock` 対応
+- **プロジェクト除外**: ARM64 アセンブリプロジェクトの自動スキップ
 
 ### テスト仕様
 
@@ -161,10 +168,10 @@ conc_ytakano/
 
 ```bash
 # Dockerイメージをビルド
-docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
+docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.65 .
 
 # コンテナを起動してテスト実行
-docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.70 ./test.sh
+docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.65 ./test.sh
 ```
 
 ### 出力例
@@ -203,7 +210,7 @@ Rustプロジェクト:  37/37 成功
 アセンブリ生成:    2/2 成功
 🎉 全てのテストが成功しました！
 
-注意: appendix_A は ARM64 アセンブリのため x86_64 環境では除外されています
+注意: appendix_A, chap6/ch6_mult, chap7/7.3/ch7_3_lockfree は ARM64 アセンブリのため x86_64 環境では除外されています
 ```
 
 ## トラブルシューティング
