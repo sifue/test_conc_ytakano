@@ -68,6 +68,10 @@ docker run --platform linux/amd64 -it --rm -v "%cd%:/work" -w /work univ/dev-env
 コンテナ内で以下のコマンドを実行してテストを開始します：
 
 ```bash
+# 実行権限を付与
+chmod +x test.sh
+
+# テストスクリプトを実行
 ./test.sh
 ```
 
@@ -183,8 +187,11 @@ conc_ytakano/
 # Dockerイメージをビルド
 docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
 
-# コンテナを起動してテスト実行
-docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.70 ./test.sh
+# コンテナを起動
+docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.70 bash
+
+# コンテナ内でテスト実行
+chmod +x test.sh && ./test.sh
 ```
 
 #### Windows PowerShell環境
@@ -192,8 +199,11 @@ docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-e
 # Dockerイメージをビルド
 docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
 
-# コンテナを起動してテスト実行
-docker run --platform linux/amd64 -it --rm -v "${PWD}:/work" -w /work univ/dev-env:x86_1.70 ./test.sh
+# コンテナを起動
+docker run --platform linux/amd64 -it --rm -v "${PWD}:/work" -w /work univ/dev-env:x86_1.70 bash
+
+# コンテナ内でテスト実行（行末文字修正含む）
+sed -i 's/\r$//' test.sh && chmod +x test.sh && ./test.sh
 ```
 
 #### Windowsコマンドプロンプト環境
@@ -201,8 +211,11 @@ docker run --platform linux/amd64 -it --rm -v "${PWD}:/work" -w /work univ/dev-e
 REM Dockerイメージをビルド
 docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
 
-REM コンテナを起動してテスト実行
-docker run --platform linux/amd64 -it --rm -v "%cd%:/work" -w /work univ/dev-env:x86_1.70 ./test.sh
+REM コンテナを起動
+docker run --platform linux/amd64 -it --rm -v "%cd%:/work" -w /work univ/dev-env:x86_1.70 bash
+
+REM コンテナ内でテスト実行（行末文字修正含む）
+sed -i 's/\r$//' test.sh && chmod +x test.sh && ./test.sh
 ```
 
 ### 出力例
