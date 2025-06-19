@@ -50,8 +50,19 @@ docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
 
 ### 3. コンテナの起動とテスト実行
 
+#### Linux/macOS環境の場合
 ```bash
 docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.70 bash
+```
+
+#### Windows PowerShell環境の場合
+```powershell
+docker run --platform linux/amd64 -it --rm -v "${PWD}:/work" -w /work univ/dev-env:x86_1.70 bash
+```
+
+#### Windowsコマンドプロンプト環境の場合
+```cmd
+docker run --platform linux/amd64 -it --rm -v "%cd%:/work" -w /work univ/dev-env:x86_1.70 bash
 ```
 
 コンテナ内で以下のコマンドを実行してテストを開始します：
@@ -167,12 +178,31 @@ conc_ytakano/
 
 ### 基本的な使用方法
 
+#### Linux/macOS環境
 ```bash
 # Dockerイメージをビルド
-docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.65 .
+docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
 
 # コンテナを起動してテスト実行
-docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.65 ./test.sh
+docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.70 ./test.sh
+```
+
+#### Windows PowerShell環境
+```powershell
+# Dockerイメージをビルド
+docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
+
+# コンテナを起動してテスト実行
+docker run --platform linux/amd64 -it --rm -v "${PWD}:/work" -w /work univ/dev-env:x86_1.70 ./test.sh
+```
+
+#### Windowsコマンドプロンプト環境
+```cmd
+REM Dockerイメージをビルド
+docker buildx build --platform linux/amd64 -t univ/dev-env:x86_1.70 .
+
+REM コンテナを起動してテスト実行
+docker run --platform linux/amd64 -it --rm -v "%cd%:/work" -w /work univ/dev-env:x86_1.70 ./test.sh
 ```
 
 ### 出力例
@@ -233,6 +263,23 @@ Rustプロジェクト:  37/37 成功
    - **Rust バージョンエラー**: Docker環境は Rust 1.70.0 を使用（最新版使用時は互換性問題が発生）
    - **ARM64 アセンブリエラー**: `appendix_A` は x86_64 環境では動作しません（テスト対象から除外済み）
    - **リンクエラー**: `binutils` パッケージが正しくインストールされているか確認
+
+### Windows環境での問題
+
+5. **`docker: invalid reference format` エラー**
+   - **原因**: PowerShellでの変数展開構文の違い
+   - **解決方法**: 
+     - PowerShell: `"${PWD}:/work"` を使用
+     - コマンドプロンプト: `"%cd%:/work"` を使用
+     - 従来の `"$(pwd)":/work` はLinux/macOS専用
+
+6. **パス区切り文字の問題**
+   - Windowsでは区切り文字が異なる場合があります
+   - Docker for Windowsを使用時は上記の変数展開方法を使用してください
+
+7. **行末文字の問題**
+   - Gitがテキストファイルの行末を変換している場合があります
+   - 必要に応じて `git config core.autocrlf false` を設定してください
 
 ### ログファイルの確認
 
