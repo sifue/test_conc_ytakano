@@ -1,0 +1,12 @@
+# Bash scripts should always use LF line endings
+*.sh text eol=lf
+
+# Windows batch files should use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files should not be modified
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary

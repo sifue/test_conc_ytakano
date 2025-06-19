@@ -277,9 +277,28 @@ Rustプロジェクト:  37/37 成功
    - Windowsでは区切り文字が異なる場合があります
    - Docker for Windowsを使用時は上記の変数展開方法を使用してください
 
-7. **行末文字の問題**
-   - Gitがテキストファイルの行末を変換している場合があります
-   - 必要に応じて `git config core.autocrlf false` を設定してください
+7. **`bash: ./test.sh: cannot execute: required file not found` エラー**
+   - **原因**: Windows環境での行末文字問題（CRLF → LF）
+   - **解決方法1**: コンテナ内で以下のコマンドを実行
+     ```bash
+     # 行末文字を修正
+     sed -i 's/\r$//' test.sh
+     chmod +x test.sh
+     ./test.sh
+     ```
+   - **解決方法2**: Gitの設定変更（事前対策）
+     ```powershell
+     # Gitの自動行末変換を無効化
+     git config --global core.autocrlf false
+     # プロジェクトを再クローン
+     git clone https://github.com/oreilly-japan/conc_ytakano.git
+     ```
+   - **解決方法3**: WSL2の使用を推奨
+     ```bash
+     # WSL2環境では Linux と同じコマンドが使用可能
+     docker run --platform linux/amd64 -it --rm -v "$(pwd)":/work -w /work univ/dev-env:x86_1.70 bash
+     ```
+   - **予防策**: `.gitattributes`ファイルで行末文字を自動制御（本プロジェクトに含まれています）
 
 ### ログファイルの確認
 
